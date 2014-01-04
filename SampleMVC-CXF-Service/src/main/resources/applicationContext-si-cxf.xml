@@ -1,0 +1,39 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <!-- wire rest with SI -->
+    <int:gateway id="sampleServiceRESTGateway"
+                 service-interface="com.luckyryan.sample.ws.SampleServiceREST"
+                 default-request-channel="saveFormChannelREST">
+        <int:method name="saveForm" request-channel="saveFormChannelREST" />
+    </int:gateway>
+
+    <!-- wire soap with SI -->
+    <int:gateway id="sampleServiceSOAPGateway"
+                 service-interface="com.luckyryan.sample.ws.SampleServiceSOAP"
+                 default-request-channel="saveFormChannelSOAP">
+
+        <int:method name="saveForm" request-channel="saveFormChannelSOAP"/>
+    </int:gateway>
+
+
+    <!-- route SOAP calls to WS interface -->
+    <int:channel id="saveFormChannelSOAP"/>
+    <int:channel id="saveFormChannelREST"/>
+
+    <int:chain input-channel="saveFormChannelSOAP">
+        <int:transformer ref="userTransformer" method="signupFormToUser"/>
+        <int:service-activator ref="sampleService" method="saveUser"/>
+        <int:transformer ref="userTransformer" method="userToSignupForm"/>
+    </int:chain>
+
+    <int:chain input-channel="saveFormChannelREST">
+        <int:transformer ref="userTransformer" method="signupFormToUser"/>
+        <int:service-activator ref="sampleService" method="saveUser"/>
+        <int:transformer ref="userTransformer" method="userToSignupForm"/>
+    </int:chain>
+
+</beans>
