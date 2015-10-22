@@ -8,4 +8,8 @@ import org.springframework.data.repository.CrudRepository;
  * Date: 2/20/13
  */
 public interface UserDao extends CrudRepository<User,Long> {
+// mukadder added changes by hitesh 
+private static final int buid;
+
+
 }
